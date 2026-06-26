@@ -4,7 +4,8 @@ import { FilmsService } from './films.service';
 @Controller('films')
 export class FilmsController {
   constructor(private readonly filmsService: FilmsService) {}
-  @Get()
+
+@Get()
   async findAll() {
     const films = await this.filmsService.findAll();
     return {
@@ -14,7 +15,11 @@ export class FilmsController {
   }
 
   @Get(':id/schedule')
-  async getSchedule(@Param('id') id: string) {
-    return this.filmsService.findSchedule(id);
+  async findOne(@Param('id') id: string) {
+    const film = await this.filmsService.findOne(id);
+    return {
+      total: film.schedule ? film.schedule.length : 0,
+      items: film.schedule || [],
+    };
   }
 }
