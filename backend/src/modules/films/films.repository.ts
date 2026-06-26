@@ -19,6 +19,9 @@ export class FilmsRepository {
   }
 
   async findOneWithSchedule(id: string): Promise<Film | null> {
-    return this.filmTypeOrmRepository.findOne({where:{id}, relations:['schedule']});
+    return this.filmTypeOrmRepository.findOne({
+      where: { id },
+      relations: ['schedule'],
+    });
   }
 }

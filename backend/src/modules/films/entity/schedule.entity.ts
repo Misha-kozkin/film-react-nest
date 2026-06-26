@@ -1,9 +1,4 @@
-import { 
-  Entity,
-   Column,
-    PrimaryColumn,
-     ManyToOne,
-      JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Film } from './film.entity';
 
 @Entity('schedules')
@@ -28,8 +23,8 @@ export class Schedule {
 
   @Column('text')
   taken: string;
-  
+
   @ManyToOne(() => Film, (film) => film.schedule, { onDelete: 'CASCADE' })
-  @JoinColumn({name: 'filmId'})
+  @JoinColumn({ name: 'filmId' })
   film: Film;
 }

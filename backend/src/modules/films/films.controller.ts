@@ -5,7 +5,7 @@ import { FilmsService } from './films.service';
 export class FilmsController {
   constructor(private readonly filmsService: FilmsService) {}
 
-@Get()
+  @Get()
   async findAll() {
     const films = await this.filmsService.findAll();
     return {

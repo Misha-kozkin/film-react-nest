@@ -7,9 +7,7 @@ import { Film } from './entity/film.entity';
 import { Schedule } from './entity/schedule.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Film, Schedule]),
-  ],
+  imports: [TypeOrmModule.forFeature([Film, Schedule])],
   controllers: [FilmsController],
   providers: [FilmsService, FilmsRepository],
   exports: [TypeOrmModule, FilmsRepository],
