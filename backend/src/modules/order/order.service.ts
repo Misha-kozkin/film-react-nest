@@ -34,15 +34,24 @@ export class OrderService {
     }
 
     const session = await this.scheduleRepository.findOne({
-      where: { id: sessionId },
+      where: { id: sessionId, film: { id: filmId } },
+      relations: ['film'],
     });
+
     if (!session) {
-      this.logger.warn(
-        `Попытка создать заказ для несуществующего сеанса с id: ${sessionId} (Фильм: ${film.title})`,
-      );
-      throw new NotFoundException(`Сеанс с id ${sessionId} не найден`);
+      throw new NotFoundException(`Сеанс ${sessionId} для фильма ${filmId} не найден`);
     }
 
+    const invalidTicket = tickets.find(
+      (t) => t.row > session.rows || t.seat > session.seats,
+    );
+
+    if (invalidTicket) {
+      throw new BadRequestException(
+        `Выбрано несуществующее место: ряд ${invalidTicket.row}, место ${invalidTicket.seat}. В зале всего рядов: ${session.rows}, мест: ${session.seats}.`
+      );
+    }
+    
     const requestedSeats = tickets.map((t) => `${t.row}:${t.seat}`);
 
     const currentTakenSeats = session.taken
