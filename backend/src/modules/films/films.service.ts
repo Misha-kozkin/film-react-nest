@@ -1,21 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilmsRepository } from './films.repository';
-import { Film } from './films.schema';
+import { Film } from './entity/film.entity';
 
 @Injectable()
 export class FilmsService {
   constructor(private readonly filmsRepository: FilmsRepository) {}
 
   async findAll(): Promise<Film[]> {
-    return this.filmsRepository.findAll();
+    const films = await this.filmsRepository.findAll();
+
+    return films.map((film) => ({
+      ...film,
+      tags: film.tags ? film.tags.split(',').map((t) => t.trim()) : [],
+    })) as unknown as Film[];
   }
 
-  async findSchedule(id: string): Promise<any> {
-    const film = await this.filmsRepository.findById(id);
-    if (!film) throw new NotFoundException(`Фильм с ID ${id} не найден`);
+  async findOne(id: string): Promise<Film> {
+    const film = await this.filmsRepository.findOneWithSchedule(id);
+
+    if (!film) {
+      throw new NotFoundException(`Фильм с id ${id} не найден`);
+    }
+
+    const formattedSchedule = film.schedule.map((session) => ({
+      ...session,
+      taken: session.taken ? session.taken.split(',').map((s) => s.trim()) : [],
+    }));
+
     return {
-      total: film.schedule.length,
-      items: film.schedule,
-    };
+      ...film,
+      tags: film.tags ? film.tags.split(',').map((t) => t.trim()) : [],
+      schedule: formattedSchedule,
+    } as unknown as Film;
   }
 }
