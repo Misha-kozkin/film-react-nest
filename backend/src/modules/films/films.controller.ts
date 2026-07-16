@@ -14,14 +14,14 @@ export class FilmsController {
     };
   }
 
-@Get(':id/schedule')
+  @Get(':id/schedule')
   async findOne(@Param('id') id: string) {
     const film = await this.filmsService.findOne(id);
 
     const { schedule, ...filmWithoutSchedule } = film;
-    
+
     return {
-      ...filmWithoutSchedule,   
+      ...filmWithoutSchedule,
       total: schedule ? schedule.length : 0,
       items: schedule || [],
     };
