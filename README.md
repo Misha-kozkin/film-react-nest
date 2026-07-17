@@ -1,36 +1,58 @@
-# FILM!
+# Film — афиша кинотеатра
 
-## Установка
+Учебный fullstack-проект: сервис афиши кинотеатра с бронированием билетов. Бэкенд на NestJS, фронтенд на React, база данных PostgreSQL. Приложение докеризировано и задеплоено на удалённый сервер с автоматической сборкой образов через GitHub Actions.
 
-### MongoDB
+## Демо
 
-Установите MongoDB скачав дистрибутив с официального сайта или с помощью пакетного менеджера вашей ОС. Также можно воспользоваться Docker (см. ветку `feat/docker`.
+Проект доступен по адресу: **https://mikhailkozkin.com/**
 
-Выполните скрипт `test/mongodb_initial_stub.js` в консоли `mongo`.
+## Стек
 
-### Бэкенд
+- **Backend**: NestJS, TypeORM, PostgreSQL
+- **Frontend**: React, Vite
+- **Инфраструктура**: Docker, Docker Compose, Nginx, GitHub Actions, GHCR
 
-Перейдите в папку с исходным кодом бэкенда
+## Возможности
 
-`cd backend`
+- Просмотр афиши фильмов и расписания сеансов
+- Бронирование билетов
+- Гибкое логирование: три режима вывода логов (`dev`, `json`, `tskv`), переключаются через переменную окружения `LOGGER_TYPE`
+- Юнит-тесты на логгеры и контроллеры
 
-Установите зависимости (точно такие же, как в package-lock.json) помощью команд
+## Запуск локально
 
-`npm ci` или `yarn install --frozen-lockfile`
+### Через Docker Compose (рекомендуется)
 
-Создайте `.env` файл из примера `.env.example`, в нём укажите:
+```bash
+git clone <ссылка на репозиторий>
+cd film-react-nest
+cp .env.example .env
+cp backend/.env.example backend/.env
+docker compose up -d --build
+```
 
-* `DATABASE_DRIVER` - тип драйвера СУБД - в нашем случае это `mongodb` 
-* `DATABASE_URL` - адрес СУБД MongoDB, например `mongodb://127.0.0.1:27017/practicum`.  
+pgAdmin приложение будет доступно на **https://pgadmin.mikhailkozkin.com**
 
-MongoDB должна быть установлена и запущена.
+### Без Docker (для разработки)
 
-Запустите бэкенд:
+```bash
+cd backend
+npm install
+npm run start:dev
 
-`npm start:debug`
+cd ../frontend
+npm install
+npm run dev
+```
 
-Для проверки отправьте тестовый запрос с помощью Postman или `curl`.
+## Тесты
 
+```bash
+cd backend
+npm run lint
+npm test
+```
 
+## CI/CD
 
-
+При каждом пуше в ветку `main` GitHub Actions автоматически собирает и публикует три Docker-образа (backend, frontend, nginx) в GitHub Container Registry.
