@@ -104,6 +104,8 @@ export interface Contacts {
 }
 
 export interface Order extends Contacts {
+    film: string;
+    session: string;
     tickets: Ticket[];
 }
 

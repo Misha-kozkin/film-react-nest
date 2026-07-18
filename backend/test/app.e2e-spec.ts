@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
@@ -12,13 +12,32 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api/afisha');
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it('/api/afisha/films (GET) должен вернуть список фильмов с полями total и items', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/api/afisha/films')
       .expect(200)
-      .expect('Hello World!');
+      .expect((res) => {
+        expect(res.body).toHaveProperty('total');
+        expect(res.body).toHaveProperty('items');
+        expect(Array.isArray(res.body.items)).toBe(true);
+      });
+  });
+
+  it('/api/afisha/order (POST) без обязательных полей должен вернуть 400', () => {
+    return request(app.getHttpServer())
+      .post('/api/afisha/order')
+      .send({})
+      .expect(400);
   });
 });

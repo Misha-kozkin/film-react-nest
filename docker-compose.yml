@@ -1,0 +1,75 @@
+services:
+  database:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - film-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - film-network
+    depends_on:
+      - database
+
+  backend:
+    build: ./backend
+    image: ghcr.io/${GITHUB_OWNER}/film-react-nest-backend:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: database
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DBPORT: 5432
+      PORT: 3000
+      LOGGER_TYPE: dev
+    depends_on:
+      - database
+    networks:
+      - film-network
+
+  frontend:
+    build: ./frontend
+    image: ghcr.io/${GITHUB_OWNER}/film-react-nest-frontend:latest
+    restart: "no"
+    volumes:
+      - frontend-dist:/usr/share/nginx/html
+    networks:
+      - film-network
+
+  nginx:
+    build: ./nginx
+    image: ghcr.io/${GITHUB_OWNER}/film-react-nest-nginx:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - frontend-dist:/usr/share/nginx/html
+    depends_on:
+      backend:
+        condition: service_started
+      frontend:
+        condition: service_completed_successfully
+    networks:
+      - film-network
+
+networks:
+  film-network:
+
+volumes:
+  db-data:
+  pgadmin-data:
+  frontend-dist:

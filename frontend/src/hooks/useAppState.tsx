@@ -40,6 +40,8 @@ export function useAppState() {
 
     const orderTickets = () => {
         api.current.orderTickets({
+            film: state.selectedFilm!,
+            session: state.selectedSession!,
             email: state.contacts.email,
             phone: state.contacts.phone,
             tickets: state.basket
