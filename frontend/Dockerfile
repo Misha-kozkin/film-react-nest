@@ -9,4 +9,4 @@ FROM node:22-alpine
 WORKDIR /app
 RUN npm install -g serve
 COPY --from=builder /app/dist ./dist
-CMD ["sh", "-c", "cp -r /app/dist/. /usr/share/nginx/html/ && sleep infinity"]
+CMD ["cp", "-r", "/app/dist/.", "/usr/share/nginx/html/"]

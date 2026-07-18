@@ -19,34 +19,32 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-    # ports: Порты убирал трафик пойдет через внутреннюю сеть Docker от Nginx
-    #   - "8080:80"
     networks:
       - film-network
     depends_on:
       - database
 
-backend:
-  build: ./backend
-  image: ghcr.io/${GITHUB_OWNER}/film-react-nest-backend:latest
-  restart: unless-stopped
-  environment:
-    DATABASE_URL: database
-    DATABASE_USERNAME: ${DATABASE_USERNAME}
-    DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-    DATABASE_NAME: ${DATABASE_NAME}
-    DBPORT: 5432
-    PORT: 3000
-    LOGGER_TYPE: dev
-  depends_on:
-    - database
-  networks:
-    - film-network
+  backend:
+    build: ./backend
+    image: ghcr.io/${GITHUB_OWNER}/film-react-nest-backend:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: database
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DBPORT: 5432
+      PORT: 3000
+      LOGGER_TYPE: dev
+    depends_on:
+      - database
+    networks:
+      - film-network
 
   frontend:
     build: ./frontend
     image: ghcr.io/${GITHUB_OWNER}/film-react-nest-frontend:latest
-    restart: unless-stopped
+    restart: "no"
     volumes:
       - frontend-dist:/usr/share/nginx/html
     networks:
@@ -61,10 +59,10 @@ backend:
     volumes:
       - frontend-dist:/usr/share/nginx/html
     depends_on:
-    backend:
-      condition: service_started
-    frontend:
-      condition: service_completed_successfully
+      backend:
+        condition: service_started
+      frontend:
+        condition: service_completed_successfully
     networks:
       - film-network
 
