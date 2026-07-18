@@ -2,7 +2,7 @@ import { LoggerService, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class TskvLogger implements LoggerService {
-  private escapeValue(value: any): string {
+  private escapeValue(value: unknown): string {
     const str =
       typeof value === 'object' ? JSON.stringify(value) : String(value);
     return str
@@ -14,10 +14,10 @@ export class TskvLogger implements LoggerService {
 
   private formatMessage(
     level: string,
-    message: any,
-    ...optionalParams: any[]
+    message: unknown,
+    ...optionalParams: unknown[]
   ): string {
-    const fields: Record<string, any> = {
+    const fields: Record<string, unknown> = {
       time: new Date().toISOString(),
       level,
       message,
@@ -34,29 +34,29 @@ export class TskvLogger implements LoggerService {
     );
   }
 
-  log(message: any, ...optionalParams: any[]) {
+  log(message: unknown, ...optionalParams: unknown[]) {
     process.stdout.write(this.formatMessage('log', message, ...optionalParams));
   }
 
-  error(message: any, ...optionalParams: any[]) {
+  error(message: unknown, ...optionalParams: unknown[]) {
     process.stderr.write(
       this.formatMessage('error', message, ...optionalParams),
     );
   }
 
-  warn(message: any, ...optionalParams: any[]) {
+  warn(message: unknown, ...optionalParams: unknown[]) {
     process.stdout.write(
       this.formatMessage('warn', message, ...optionalParams),
     );
   }
 
-  debug(message: any, ...optionalParams: any[]) {
+  debug(message: unknown, ...optionalParams: unknown[]) {
     process.stdout.write(
       this.formatMessage('debug', message, ...optionalParams),
     );
   }
 
-  verbose(message: any, ...optionalParams: any[]) {
+  verbose(message: unknown, ...optionalParams: unknown[]) {
     process.stdout.write(
       this.formatMessage('verbose', message, ...optionalParams),
     );

@@ -32,7 +32,11 @@ describe('OrderController', () => {
 
   it('createOrder должен передавать dto в OrderService и вернуть его результат', async () => {
     const expected = { total: 1, items: dto.tickets };
-    jest.spyOn(service, 'createOrder').mockResolvedValue(expected as any);
+    jest
+      .spyOn(service, 'createOrder')
+      .mockResolvedValue(
+        expected as unknown as { total: number; items: typeof dto.tickets },
+      );
 
     const result = await controller.createOrder(dto);
 

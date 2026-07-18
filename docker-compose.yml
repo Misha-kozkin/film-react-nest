@@ -26,18 +26,22 @@ services:
     depends_on:
       - database
 
-  backend:
-    build: ./backend
-    image: ghcr.io/${GITHUB_OWNER}/film-react-nest-backend:latest
-    restart: unless-stopped
-    env_file:
-      - ./backend/.env
-    environment:
-      DATABASE_URL: database
-    depends_on:
-      - database
-    networks:
-      - film-network
+backend:
+  build: ./backend
+  image: ghcr.io/${GITHUB_OWNER}/film-react-nest-backend:latest
+  restart: unless-stopped
+  environment:
+    DATABASE_URL: database
+    DATABASE_USERNAME: ${DATABASE_USERNAME}
+    DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    DATABASE_NAME: ${DATABASE_NAME}
+    DBPORT: 5432
+    PORT: 3000
+    LOGGER_TYPE: dev
+  depends_on:
+    - database
+  networks:
+    - film-network
 
   frontend:
     build: ./frontend
@@ -57,8 +61,10 @@ services:
     volumes:
       - frontend-dist:/usr/share/nginx/html
     depends_on:
-      - backend
-      - frontend
+    backend:
+      condition: service_started
+    frontend:
+      condition: service_completed_successfully
     networks:
       - film-network
 

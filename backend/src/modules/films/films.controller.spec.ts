@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FilmsController } from './films.controller';
 import { FilmsService } from './films.service';
+import { Film } from './entity/film.entity';
 
 describe('FilmsController', () => {
   let controller: FilmsController;
@@ -32,7 +33,9 @@ describe('FilmsController', () => {
   });
 
   it('findAll должен вернуть total и items из FilmsService', async () => {
-    jest.spyOn(service, 'findAll').mockResolvedValue([mockFilm] as any);
+    jest
+      .spyOn(service, 'findAll')
+      .mockResolvedValue([mockFilm] as unknown as Film[]);
 
     const result = await controller.findAll();
 
@@ -41,7 +44,9 @@ describe('FilmsController', () => {
   });
 
   it('findOne должен вернуть фильм с total и items вместо schedule', async () => {
-    jest.spyOn(service, 'findOne').mockResolvedValue(mockFilm as any);
+    jest
+      .spyOn(service, 'findOne')
+      .mockResolvedValue(mockFilm as unknown as Film);
 
     const result = await controller.findOne('film-1');
 
